@@ -1,6 +1,7 @@
 # 氢能产业简报生成系统
 
 一个基于大型语言模型（LLM）和网络搜索的自动化工具，用于搜集、整理并生成结构化的氢能产业简报。
+可以调整templates.prompts/html_templates后用于生成各种内容/类型的结构化简报。
 
 ## 核心功能
 
@@ -20,10 +21,9 @@
 **1. 克隆仓库**
 
 ```bash
-git clone https://github.com/your-username/hydrogen_report_generator.git
+git clone https://github.com/iuany7/hydrogen_report_generator.git
 cd hydrogen_report_generator
 ```
-*(请将 `your-username` 替换为实际的用户名)*
 
 **2. 创建并激活虚拟环境**
 
