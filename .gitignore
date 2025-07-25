@@ -150,6 +150,6 @@ $RECYCLE.BIN/
 # Generated output directories
 /output/
 /logs/
-
+/assets/
 # Local test files
 test_report.md
