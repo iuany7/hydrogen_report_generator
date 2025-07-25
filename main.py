@@ -18,8 +18,16 @@ sys.path.insert(0, str(Path(__file__).parent))
 from src.utils import setup_logging, validate_api_keys, check_dependencies, get_project_info
 from src.llm_service import LLMService
 from src.report_generator import ReportGenerator
+from src.email_service import EmailService
 from templates.prompts import get_hydrogen_report_prompt
-from config import LOG_LEVEL
+from config import (
+    LOG_LEVEL, 
+    EMAIL_HOST, 
+    EMAIL_PORT, 
+    EMAIL_USER, 
+    EMAIL_PASSWORD, 
+    EMAIL_RECIPIENTS
+)
 
 
 def main():
@@ -32,9 +40,9 @@ def main():
     logger.info(f"启动 {info['name']} v{info['version']}")
     
     # 检查依赖和API密钥
-    if not check_dependencies():
-        logger.error("依赖检查失败，程序退出")
-        sys.exit(1)
+    # if not check_dependencies():
+    #     logger.error("依赖检查失败，程序退出")
+    #     sys.exit(1)
     
     if not validate_api_keys():
         logger.error("API密钥验证失败，程序退出")
@@ -48,10 +56,10 @@ def main():
         
         # 生成报告
         logger.info("开始生成氢能产业简报...")
-        with tqdm(total=3, desc="生成进度") as pbar:
+        with tqdm(total=4, desc="生成进度") as pbar:
             
             # 步骤1: 生成报告内容
-            pbar.set_description("生成报告内容")
+            pbar.set_description("步骤1: 生成报告内容")
             report_prompt = get_hydrogen_report_prompt()
             markdown_content = llm_service.generate_report(report_prompt)
             
@@ -61,13 +69,41 @@ def main():
             
             pbar.update(1)
             
-            # 步骤2: 生成图片
-            pbar.set_description("生成报告图片")
+            # 步骤2: 生成图片和PDF
+            pbar.set_description("步骤2: 生成报告文件")
             image_paths, pdf_path = report_generator.generate_complete_report(markdown_content)
             pbar.update(1)
             
-            # 步骤3: 完成
-            pbar.set_description("完成")
+            # 步骤3: 发送邮件
+            pbar.set_description("步骤3: 发送邮件")
+            email_service = EmailService(
+                host=EMAIL_HOST,
+                port=EMAIL_PORT,
+                user=EMAIL_USER,
+                password=EMAIL_PASSWORD
+            )
+            
+            attachments = []
+            if pdf_path:
+                attachments.append(pdf_path)
+            attachments.extend(image_paths)
+            
+            if attachments:
+                current_time_str = datetime.now().strftime("%Y年%m月%d日")
+                subject = f"{current_time_str} 氢能产业简报"
+                body = f"您好，以下附件为最新的氢能产业简报，请查收。此邮件为自动发送，请勿回复。祝好！"
+                email_service.send_email_with_attachments(
+                    recipients=EMAIL_RECIPIENTS,
+                    subject=subject,
+                    body=body,
+                    attachments=attachments
+                )
+            else:
+                logger.warning("没有文件可供发送，已跳过邮件发送。")
+            pbar.update(1)
+
+            # 步骤4: 完成
+            pbar.set_description("步骤4: 完成")
             pbar.update(1)
         
         # 显示结果
