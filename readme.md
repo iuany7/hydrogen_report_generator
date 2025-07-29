@@ -62,6 +62,19 @@ cp .env.example .env
 # .env
 DEEPSEEK_API_KEY=your_deepseek_api_key_here
 SERPAPI_API_KEY=your_serpapi_api_key_here
+SERPAPI_ENGINES="the search engineer you want, , "
+EMAIL_HOST=""
+EMAIL_PORT=
+EMAIL_USER=""
+EMAIL_PASSWORD=""
+EMAIL_RECIPIENTS=""
+# 可选：日志级别 (DEBUG, INFO, WARNING, ERROR)
+LOG_LEVEL=
+# 可选：输出目录
+OUTPUT_DIR=
+# 可选：报告标题和副标题
+REPORT_TITLE=
+REPORT_SUBTITLE=
 ```
 
 - **DeepSeek API Key**: 从 [platform.deepseek.com](https://platform.deepseek.com) 获取。
